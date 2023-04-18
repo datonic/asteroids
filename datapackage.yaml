@@ -1,0 +1,25 @@
+name: asteroids
+kind: FrictionlessDatapackage
+kindVersion: 1.0.0
+title: Asteroids
+sources:
+  - title: WikiData Query Service
+    path: https://w.wiki/6bdo
+resources:
+  - name: asteroids
+    path: data/asteroids.csv
+    archiveCID: todo
+    description: Facts about asteroids
+    format: csv
+    mediaType: text/csv
+    schema:
+      fields:
+        - name: asteroidLabel
+          type: string
+          title: Label
+        - name: discovered
+          type: string
+          title: Discovered
+        - name: discovererLabel
+          type: string
+          title: Discoverer

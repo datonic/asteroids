@@ -1,0 +1,66 @@
+name: CI
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+  workflow_dispatch:
+  schedule:
+    - cron: "0 0 * * 0"
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Get data
+        run: make data
+      - name: Commit and push changes
+        run: |
+          git config --global user.name "GitHub Action"
+          git config --global user.email "actions@users.noreply.github.com"
+          git add datapackage.yaml
+          if git diff-index --quiet HEAD --; then
+            echo "No changes to commit"
+          else
+            git commit -m "chore: 🆕 update dataset"
+            git push
+          fi
+  describe:
+    runs-on: ubuntu-latest
+    needs: [update]
+    steps:
+      - name: Install frictionless
+        run: pip install frictionless
+      - name: Describe
+        run: frictionless describe https://raw.githubusercontent.com/datonic/atmospheric-carbon-dioxide-trends/main/datapackage.yaml --stats
+  backup:
+    runs-on: ubuntu-latest
+    needs: [describe, update]
+    steps:
+      - uses: actions/checkout@v3
+      - name: Install frictionless
+        run: pip install frictionless
+      - name: Describe
+        run: frictionless extract https://raw.githubusercontent.com/datonic/atmospheric-carbon-dioxide-trends/main/datapackage.yaml --csv > dataset.csv
+      - name: Upload to IPFS
+        uses: web3-storage/add-to-web3@v2
+        id: web3
+        with:
+          web3_token: ${{ secrets.WEB3_STORAGE_TOKEN }}
+          path_to_add: "dataset.csv"
+      - name: Replace archiveCID
+        run: |
+          sed -i "s/archiveCID: .*/archiveCID: ${{ steps.web3.outputs.cid }}/g" datapackage.yaml
+      - name: Commit and push changes
+        run: |
+          git config --global user.name "GitHub Action"
+          git config --global user.email "actions@users.noreply.github.com"
+          git add datapackage.yaml
+          if git diff-index --quiet HEAD --; then
+            echo "No changes to commit"
+          else
+            git commit -m "chore: :id: update CID"
+            git push
+          fi
