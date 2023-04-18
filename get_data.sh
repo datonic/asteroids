@@ -12,9 +12,6 @@ curl -s -o data/asteroids.csv -G 'https://query.wikidata.org/sparql' \
                         wdt:P61 ?discoverer; # Retrieve discoverer of the asteroid
                         wdt:P575 ?discovered; # Retrieve discovered date of the asteroid
             SERVICE wikibase:label { bd:serviceParam wikibase:language "en". }
-
-            BIND (?asteroidLabel AS ?asteroid_label)
-            BIND (?discovererLabel AS ?discoverer_label)
         }
         ORDER BY DESC(?discovered)
     '
