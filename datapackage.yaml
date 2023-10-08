@@ -8,7 +8,7 @@ sources:
 resources:
   - name: asteroids
     path: data/asteroids.csv
-    archiveCID: bafybeicqzcs5yafsrstvramhqw7tqjcpbkecyoqzhnvmxcsmcjkh33ozx4
+    archiveCID: bafybeiguptuhgqj7ynj23qotzvt4ltmtjjsmzz4mbclyauxl6cp3iakwte
     description: Facts about asteroids
     format: csv
     mediaType: text/csv
